@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
-const TOKEN_KEY = "auth_token_demo_v1";
+const TOKEN_KEY = "auth_token_bunny_v1";
 
 async function saveToken(value: string) {
   return SecureStore.setItemAsync(TOKEN_KEY, value);
@@ -24,43 +24,75 @@ export default function TokenScreen() {
     })();
   }, []);
 
-  useEffect(() => {
-    const loadToken = async () => {
-      const token = await SecureStore.getItemAsync("auth_token");
-      if (token) setToken(token);
-    };
-    loadToken();
-  }, []);
+  const handleSave = async () => {
+    await saveToken("bunny-token-128878237");
+    const t = await getToken();
+    setToken(t);
+    Alert.alert("✅ Saved", "Dummy token stored securely");
+  };
+
+  const handleDelete = async () => {
+    await deleteToken();
+    setToken(null);
+    Alert.alert("🗑️ Deleted", "Token removed from secure storage");
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Secure Token Demo</Text>
-      <Text style={{ marginBottom: 12 }}>
-        Stored Token: {token ?? "No token yet"}
-      </Text>
-      <Button
-        title="Save Dummy Token"
-        onPress={async () => {
-          await saveToken("dummy-token-12345");
-          const t = await getToken();
-          setToken(t);
-          Alert.alert("Saved", "Dummy token saved in secure storage");
-        }}
-      />
-      <View style={{ height: 8 }} />
-      <Button
-        title="Delete Token"
-        onPress={async () => {
-          await deleteToken();
-          setToken(null);
-          Alert.alert("Deleted", "Token removed from secure storage");
-        }}
-      />
+      <Text style={styles.title}>🔐 Secure Token Demo</Text>
+
+      <View style={styles.tokenBox}>
+        <Text style={styles.tokenLabel}>Stored Token:</Text>
+        <Text style={styles.tokenValue}>
+          {token ?? "No token yet"}
+        </Text>
+      </View>
+
+      <TouchableOpacity style={[styles.button, styles.saveBtn]} onPress={handleSave}>
+        <Text style={styles.btnText}>💾 Save Dummy Token</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.button, styles.deleteBtn]} onPress={handleDelete}>
+        <Text style={styles.btnText}>🗑️ Delete Token</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, alignItems: "flex-start" },
-  title: { fontSize: 18, fontWeight: "700", marginBottom: 8 },
+  container: { flex: 1, padding: 20, backgroundColor: "#f9f9f9" },
+
+  title: { fontSize: 20, fontWeight: "700", marginBottom: 20, color: "#222" },
+
+  tokenBox: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  tokenLabel: { fontSize: 14, color: "#555", marginBottom: 6 },
+  tokenValue: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#0a62f8",
+    backgroundColor: "#eef4ff",
+    padding: 8,
+    borderRadius: 6,
+  },
+
+  button: {
+    padding: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  saveBtn: { backgroundColor: "#0a62f8" },
+  deleteBtn: { backgroundColor: "#d32f2f" },
+
+  btnText: { color: "white", fontWeight: "600", fontSize: 16 },
 });

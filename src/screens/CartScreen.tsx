@@ -12,11 +12,13 @@ export default function CartScreen() {
   const { items, increaseQty, decreaseQty, removeFromCart, clearCart } =
     useCartStore();
 
+  // Total items in cart
   const totalItems = useMemo(
     () => items.reduce((sum, i) => sum + i.qty, 0),
     [items]
   );
 
+  // Total price of cart
   const totalPrice = useMemo(
     () => items.reduce((sum, i) => sum + i.qty * (i.price ?? 0), 0),
     [items]
@@ -30,12 +32,13 @@ export default function CartScreen() {
 
       <FlatList
         data={items}
-        keyExtractor={(i) => i.cartId}
+        keyExtractor={(i) => i.id.toString()} 
         ListEmptyComponent={
           <Text style={styles.empty}>Your cart is empty 😔</Text>
         }
         renderItem={({ item }) => (
           <View style={styles.card}>
+            {/* Item details */}
             <View>
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemPrice}>
@@ -43,10 +46,11 @@ export default function CartScreen() {
               </Text>
             </View>
 
+            {/* Quantity controls */}
             <View style={styles.actions}>
               <TouchableOpacity
                 style={styles.qtyBtn}
-                onPress={() => decreaseQty(Number(item.cartId))}
+                onPress={() => decreaseQty(item.id)}
               >
                 <Text style={styles.qtyText}>−</Text>
               </TouchableOpacity>
@@ -55,15 +59,16 @@ export default function CartScreen() {
 
               <TouchableOpacity
                 style={styles.qtyBtn}
-                onPress={() => increaseQty(Number(item.cartId))}
+                onPress={() => increaseQty(item.id)}
               >
                 <Text style={styles.qtyText}>＋</Text>
               </TouchableOpacity>
             </View>
 
+            {/* Remove button */}
             <TouchableOpacity
               style={styles.removeBtn}
-              onPress={() => removeFromCart(Number(item.cartId))}
+              onPress={() => removeFromCart(item.id)}
             >
               <Text style={styles.removeText}>Remove</Text>
             </TouchableOpacity>
@@ -71,6 +76,7 @@ export default function CartScreen() {
         )}
       />
 
+      {/* Bottom Bar */}
       {items.length > 0 && (
         <View style={styles.bottomBar}>
           <TouchableOpacity style={styles.clearBtn} onPress={clearCart}>
@@ -78,7 +84,9 @@ export default function CartScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.checkoutBtn}>
-            <Text style={styles.checkoutText}>Pay ₹{totalPrice} checkout → </Text>
+            <Text style={styles.checkoutText}>
+              Pay ₹{totalPrice} checkout →
+            </Text>
           </TouchableOpacity>
         </View>
       )}

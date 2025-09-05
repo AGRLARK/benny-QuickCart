@@ -17,10 +17,17 @@ const ITEM_HEIGHT = 90;
 type Item = { id: number; name: string; price: number };
 
 export default function HomeScreen() {
+  const diamondNames = [
+    "Ruby Diamond",
+    "Emerald Diamond",
+    "Blue Diamond",
+    "Black Diamond",
+  ];
+
   const allItems = useMemo(() => {
     return Array.from({ length: TOTAL }).map((_, i) => ({
       id: i + 1,
-      name: `Item ${i + 1}`,
+      name: diamondNames[i % diamondNames.length] + ` #${i + 1}`,
       price: ((i % 100) + 1) * 5,
     })) as Item[];
   }, []);
